@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2980b9">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Setup Intel i5-13400</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 15px;
+            min-height: 100vh;
+        }
+        /* Hero redesign */
+        .hero {
+            background: linear-gradient(135deg, #1f3a93 0%, #16a085 100%);
+            border-radius: 16px;
+            color: white;
+            padding: 20px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .hero-text { 
+            flex: 1; 
+            max-width: 100%;
+        }
+        .hero-text h1 { 
+            font-size: 1.8rem; 
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .hero-cta { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            align-items: center;
+        }
+        .cta-btn { 
+            background: #fff; 
+            color: #16a085; 
+            padding: 12px 18px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            border: none; 
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+        }
+        .subhead { 
+            color: #ffffff; 
+            margin-top: 10px; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            opacity: 0.95;
+            text-align: center;
+        }
+        .container {
+            max-width: 100%;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            position: relative;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+        .progress-container {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+        }
+        .progress-card {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            padding: 16px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 300px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .progress-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+        .stat {
+            background: rgba(255,255,255,0.12);
+            padding: 10px 14px;
+            border-radius: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        .stat strong {
+            display: block;
+            font-size: 1.05rem;
+        }
+        .progress-bar {
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+            width: 100%;
+        }
+        .progress-fill {
+            height: 14px;
+            background: linear-gradient(90deg,#f1c40f,#2ecc71);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .progress-text {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        .card-title {
+            font-weight: bold;
+            color: #2980b9;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .month {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            position: relative;
+            cursor: pointer;
+            opacity: 1;
+        }
+        .month.comprado {
+            border-left: 4px solid #2ecc71;
+            background: #f0fff0;
+            opacity: 0.7;
+        }
+        .month.acumulando {
+            border-left: 4px solid #f39c12;
+            background: #fff8e1;
+        }
+        .month-number {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .component {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .price {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .saved {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .credit {
+            color: #9c27b0;
+            font-weight: bold;
+        }
+        .total {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .btn-download {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 25px 0 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(41, 128, 185, 0.4);
+            transition: all 0.3s;
+        }
+        .btn-download:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(41, 128, 185, 0.5);
+        }
+        .notes {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .notes-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .steps {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 12px;
+        }
+        .steps ol {
+            padding-left: 20px;
+        }
+        .steps li {
+            margin-bottom: 8px;
+        }
+        .footer {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+        .components-list {
+            margin-top: 25px;
+        }
+        .component-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        .component-item.comprado {
+            opacity: 0.7;
+            background: #f8fff8;
+            border-left: 4px solid #2ecc71;
+        }
+        .component-header {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .component-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        .component-price {
+            background: #27ae60;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            align-self: flex-start;
+        }
+        .component-desc {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        .component-link {
+            display: block;
+            text-align: center;
+            background: #3498db;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .checkbox-container input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+        .checkbox-label {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active {
+            border-bottom: 3px solid #2980b9;
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .financial-summary {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        /* Notificação */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-width: 100%;
+            transform: translateX(400px);
+            transition: transform 0.5s ease;
+            pointer-events: none;
+        }
+        .notification.show {
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        .notification-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .notification-title i {
+            margin-right: 8px;
+            font-style: normal;
+        }
+        .notification-message {
+            color: #856404;
+            font-size: 0.9rem;
+        }
+        .notification-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #856404;
+        }
+        /* Modal de confirmação */
+        #purchaseModal {
+            display: none;
+            opacity: 0;
+            transition: opacity 220ms ease;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 3000;
+        }
+        #purchaseModal.show {
+            display: flex !important;
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #purchaseModal > div { 
+            transform: translateY(-10px); 
+            transition: transform 220ms ease; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            max-width: 90%; 
+            margin: 40px auto;
+            width: 100%;
+            max-width: 480px;
+        }
+        #purchaseModal.show > div { transform: translateY(0); }
+        .undo-btn { 
+            background: transparent; 
+            border: 1px solid #2980b9; 
+            color: #2980b9; 
+            padding: 6px 10px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .purchase-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 8px; 
+            border-radius: 6px; 
+            background: #fff; 
+            margin-bottom: 6px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            flex-wrap: wrap;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* Layout em duas colunas para Cofrinho */
+        .cofrinho-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: start;
+            align-content: start;
+        }
+        .piggy-bank-form {
+            background: #ffffff;
+            color: #2c3e50;
+            padding: 18px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            border: 1px solid rgba(44,62,80,0.04);
+            width: 100%;
+        }
+        .piggy-bank-form .form-group { margin-bottom: 12px }
+        .piggy-bank-form label { display:block; font-weight:700; margin-bottom:6px; color:#2c3e50 }
+        .piggy-bank-form select,
+        .piggy-bank-form input[type="number"],
+        .piggy-bank-form input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(44,62,80,0.08);
+            background: #fbfdff;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+            font-size: 1rem;
+            color: #2c3e50;
+            transition: border-color .12s ease, box-shadow .12s ease;
+            min-height: 44px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .piggy-bank-form select:focus,
+        .piggy-bank-form input[type="number"]:focus,
+        .piggy-bank-form input[type="text"]:focus {
+            outline: none;
+            border-color: rgba(41,128,185,0.9);
+            box-shadow: 0 6px 18px rgba(41,128,185,0.08);
+        }
+        .piggy-bank-form .row {
+            display: flex; 
+            flex-direction: column;
+            gap: 12px; 
+        }
+        .piggy-bank-form .col { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column;
+            width: 100%;
+        }
+        .piggy-bank-form .col.narrow { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column;
+            width: 100%;
+        }
+        .piggy-bank-form .btn-add { width: 100%; margin-top: 6px }
+        .savings-list {
+            min-height: 140px;
+            max-height: 420px;
+            overflow-y: auto;
+            padding: 12px;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            border: 1px solid rgba(44,62,80,0.04);
+            width: 100%;
+        }
+        .cofrinho-total {
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            border: 1px solid rgba(44,62,80,0.04);
+            width: 100%;
+        }
+        .savings-list .savings-item { background: transparent; box-shadow: none; padding: 8px 0 }
+        .savings-total { margin-top: 12px; font-weight: 700; color: #2c3e50 }
+        .savings-item .savings-amount { font-weight: bold; color: #27ae60 }
+        .savings-total { clear: both; margin-top: 16px; }
+        .btn-add { padding: 12px 16px; font-size: 1rem; }
+        /* Enhanced button styles for better usability */
+        .btn-add {
+            background: linear-gradient(180deg,#2980b9,#1f6fa8);
+            color: #fff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(41,128,185,0.18);
+            transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+            font-weight: 700;
+        }
+        .btn-add:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(41,128,185,0.22); }
+        .btn-add:active { transform: translateY(0); box-shadow: 0 6px 16px rgba(41,128,185,0.16); }
+        .btn-add:focus { outline: 3px solid rgba(41,128,185,0.14); outline-offset: 2px; }
+
+        .btn-remove {
+            background: #fff;
+            color: #e74c3c;
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            transition: transform .12s ease, background .12s ease;
+        }
+        .btn-remove:hover { transform: scale(1.03); background: #fff7f7; }
+
+        .savings-list { display: flex; flex-direction: column; gap: 8px }
+        .savings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg,#ffffff,#fbfdff);
+            padding: 12px 14px;
+            border-radius: 12px;
+            box-shadow: 0 8px 18px rgba(12,36,64,0.04);
+            border: 1px solid rgba(44,62,80,0.03);
+        }
+        .savings-item .savings-info { display: flex; flex-direction: column }
+        .savings-month { font-weight: 700; color: #2c3e50 }
+        .savings-amount { font-weight: 800; color: #27ae60 }
+
+        .cofrinho-total { text-align: left }
+
+        /* Improve undo and link buttons */
+        .undo-btn {
+            background: transparent;
+            border: 1px solid #2980b9;
+            color: #2980b9;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background .12s ease, color .12s ease, transform .12s;
+        }
+        .undo-btn:hover { background: #eaf7ff; transform: translateY(-2px) }
+
+        /* Estilo para link de desfazer no popup (sublinhado) */
+        .undo-link {
+            background: transparent;
+            border: none;
+            color: #2980b9;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 0 6px;
+        }
+        .undo-link:hover { opacity: 0.9 }
+
+        .component-link { display: inline-block; transition: transform .12s, box-shadow .12s; }
+        .component-link:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(52,152,219,0.18) }
+
+        /* Estilo para o botão 'Mostrar todos' - combinar com design do site */
+        .btn-show-all {
+            display: none; /* controlado via JS */
+            padding: 10px 14px;
+            background: linear-gradient(180deg,#16a085,#11806b);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(17,128,107,0.16);
+            transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+            margin: 10px 0 16px 0;
+            align-self: flex-start;
+            width: 100%;
+        }
+        .btn-show-all:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(17,128,107,0.22); }
+        .btn-show-all:active { transform: translateY(0); }
+        .btn-show-all:focus { outline: 3px solid rgba(16,160,128,0.14); outline-offset: 2px; }
+        
+        /* Filtro de componentes */
+        .filter-info {
+            text-align: center;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .filter-info.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        /* Media Queries para responsividade */
+        @media (min-width: 768px) {
+            .hero {
+                flex-direction: row;
+                align-items: center;
+            }
+            .hero-text h1 {
+                text-align: left;
+                font-size: 2.2rem;
+            }
+            .subhead {
+                text-align: left;
+            }
+            .hero-cta {
+                align-items: flex-end;
+            }
+            .cta-btn {
+                width: auto;
+            }
+            .progress-stats {
+                flex-direction: row;
+            }
+            .tabs {
+                flex-wrap: nowrap;
+            }
+            .tab {
+                min-width: auto;
+            }
+            .component-header {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            .piggy-bank-form .row {
+                flex-direction: row;
+            }
+            .cofrinho-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr 220px;
+            }
+            .notification {
+                left: auto;
+                right: 20px;
+                max-width: 320px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1200px;
+                margin: 0 auto 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Notificação -->
+        <div class="notification" id="notification">
+            <button class="notification-close" onclick="hideNotification()">×</button>
+            <div class="notification-title"><i>💰</i> Lembrete Financeiro</div>
+            <div class="notification-message" id="notificationMessage"></div>
+        </div>
+        
+        <div class="header">
+            <div class="hero">
+                <div class="hero-text">
+                    <h1>🛒 Planejador de Compras de Tecnologia</h1>
+                    <p class="subhead">Organize seu hardware, monte um cronograma e acompanhe suas economias — em breve com IA para ajudar nas escolhas.</p>
+                </div>
+                <div class="hero-cta">
+                    <div class="progress-container">
+                        <div class="progress-card">
+                            <div class="small">Progresso do Projeto</div>
+                            <div style="margin:8px 0; font-weight:bold; font-size:1.2rem">Progresso: <span id="progressPercent">0%</span></div>
+                            <div class="progress-bar" style="height:12px; background:rgba(255,255,255,0.14); border-radius:10px; overflow:hidden">
+                                <div class="progress-fill" id="progressFill" style="width:0%"></div>
+                            </div>
+                            <div style="margin-top:10px; font-size:0.95rem">Total: R$ <span id="totalValue">0,00</span></div>
+                            <div style="font-size:0.95rem">Gastos: R$ <span id="spentValue">0,00</span></div>
+                            <div style="font-size:0.95rem">Restante: R$ <span id="remainingValue">0,00</span></div>
+                        </div>
+                    </div>
+                    <button class="cta-btn" onclick="gerarRelatorioFinanceiro()">📄 Gerar Relatório</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab(0)">Cronograma</div>
+            <div class="tab" onclick="showTab(1)">Componentes</div>
+            <div class="tab" onclick="showTab(2)">Cofrinho</div>
+            <div class="tab" onclick="showTab(3)">Relatório</div>
+        </div>
+        
+        <div class="tab-content active">
+            <div class="card">
+                <div class="card-title">Cronograma Inteligente de Compra</div>
+                <div class="timeline" id="timeline">
+                    <!-- Cronograma será gerado automaticamente via JavaScript -->
+                </div>
+                
+                <div class="total">
+                    Total: R$ <span id="totalValue2">0,00</span> | Meses: <span id="monthsCount">15</span>
+                </div>
+            </div>
+            
+            <div class="notes">
+                <div class="notes-title">💡 Como usar:</div>
+                <p>• Clique em um mês para ver o componente correspondente</p>
+                <p>• Marque os componentes como comprados na aba "Componentes"</p>
+                <p>• Registre seus depósitos na aba "Cofrinho"</p>
+                <p>• O progresso será atualizado automaticamente</p>
+            </div>
+        </div>
+        
+        <div class="tab-content">
+            <div class="filter-info" id="filterInfo">
+                Mostrando apenas: <span id="filterComponentName"></span>
+            </div>
+            
+            <button class="btn-show-all" onclick="showAllComponents()" id="btnShowAll">
+                Mostrar todos os componentes
+            </button>
+            
+            <div class="components-list" id="componentsList">
+                <!-- Componentes serão gerados automaticamente via JavaScript -->
+            </div>
+            
+            <div class="notes">
+                <div class="notes-title">📋 Informações Importantes:</div>
+                <p>• Marque os componentes conforme for comprando</p>
+                <p>• Os preços podem variar - verifique sempre as lojas</p>
+                <p>• Aproveite promoções para economizar ainda mais</p>
+            </div>
+        </div>
+        
+        <div class="tab-content">
+            <div class="card">
+                <div class="card-title">💰 Controle do Cofrinho</div>
+                <p style="color:#2c3e50">Registre seus depósitos mensais e acompanhe quanto falta para cada componente.</p>
+                
+                <div class="cofrinho-grid">
+                    <div class="piggy-bank-form">
+                         <div class="row">
+                             <div class="col">
+                                 <label for="savingsMonth">Mês:</label>
+                                 <select id="savingsMonth">
+                                    <option value="1">Janeiro</option>
+                                    <option value="2">Fevereiro</option>
+                                    <option value="3">Março</option>
+                                    <option value="4">Abril</option>
+                                    <option value="5">Maio</option>
+                                    <option value="6">Junho</option>
+                                    <option value="7">Julho</option>
+                                    <option value="8">Agosto</option>
+                                    <option value="9">Setembro</option>
+                                    <option value="10">Outubro</option>
+                                    <option value="11">Novembro</option>
+                                    <option value="12">Dezembro</option>
+                                 </select>
+                             </div>
+                             <div class="col narrow">
+                                 <label for="savingsYear">Ano:</label>
+                                 <input type="number" id="savingsYear" min="2023" max="2030" value="2024">
+                             </div>
+                         </div>
+                         
+                         <div class="form-group">
+                             <label for="savingsAmount">Valor Depositado (R$):</label>
+                             <input type="number" id="savingsAmount" min="0" step="0.01" placeholder="Ex: 300.00">
+                         </div>
+                         
+                         <button id="addDepositBtn" class="btn-add" onclick="addSavings()">Adicionar Depósito</button>
+                     </div>
+                     
+                     <div class="savings-list" id="savingsList">
+                         <!-- Lista de depósitos será gerada automaticamente via JavaScript -->
+                     </div>
+                     
+                     <div class="cofrinho-total">
+                        <div style="font-size:0.95rem; color:#2c3e50">Total guardado no cofrinho</div>
+                        <div style="margin-top:6px; font-size:1.1rem; font-weight:800; color:#27ae60">R$ <span id="totalSavings">0,00</span></div>
+                        <div style="margin-top:12px; font-size:0.95rem; color:#2c3e50">Meta pendente</div>
+                        <div style="margin-top:6px; font-size:1rem; font-weight:700; color:#2980b9">R$ <span id="pendingTotal">0,00</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="notes">
+                <div class="notes-title">💡 Dicas para economizar:</div>
+                <p>• Estabeleça uma meta mensal de economia</p>
+                <p>• Utilize aplicativos de controle financeiro</p>
+                <p>• Acompanhe promoções dos componentes desejados</p>
+                <p>• Considere comprar em épocas como Black Friday</p>
+            </div>
+        </div>
+        
+        <div class="tab-content">
+            <div class="financial-summary">
+                <div class="card-title">Resumo Financeiro</div>
+                <div id="financialSummary">
+                    <!-- Resumo financeiro será gerado automaticamente via JavaScript -->
+                </div>
+            </div>
+            
+            <div class="notes">
+                <div class="notes-title">💼 Relatório Detalhado</div>
+                <p>O relatório financeiro inclui:</p>
+                <p>• Total gasto e valor restante</p>
+                <p>• Progresso de aquisição dos componentes</p>
+                <p>• Estimativa de conclusão do projeto</p>
+                <p>• Histórico de depósitos no cofrinho</p>
+            </div>
+            
+            <button class="btn-download" onclick="gerarRelatorioFinanceiro()">
+                📊 Gerar Relatório em PDF
+            </button>
+        </div>
+        
+        <div class="footer">
+            Organize suas compras e acompanhe seu progresso | Toque nos links para comprar
+        </div>
+        
+        <!-- Modal de confirmação de compra -->
+        <div id="purchaseModal" style="display:none;">
+            <div>
+                <h3 id="modalTitle">Confirmar Compra</h3>
+                <p id="modalBody">Deseja confirmar a compra?</p>
+                <div style="display:flex; gap:10px; margin-top:15px; flex-wrap: wrap;">
+                    <button id="confirmPurchaseBtn" style="flex:1; min-width: 120px; background:#27ae60; color:white; padding:10px; border-radius:6px; border:none; cursor:pointer;">Confirmar</button>
+                    <button id="cancelPurchaseBtn" style="flex:1; min-width: 120px; background:#e74c3c; color:white; padding:10px; border-radius:6px; border:none; cursor:pointer;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Preços reais dos componentes (usando valores do segundo arquivo)
+        const componentPrices = {
+            1: 209.99,  // Gabinete (ex: Pichau Magpie 4)
+            2: 429.99,  // Fonte (Corsair CX650)
+            3: 309.99,  // SSD (Kingston NV3 500GB)
+            4: 359.99,  // RAM (Kingston Fury Beast 16GB DDR4)
+            5: 819.99,  // Placa-mãe (Gigabyte / B760M DDR4)
+            6: 1699.99  // Processador (Intel i5-13400)
+        };
+        
+        // Nomes dos componentes
+        const componentNames = {
+            1: "Gabinete Gamer",
+            2: "Fonte Corsair CX650",
+            3: "SSD NVMe 500GB",
+            4: "Memória RAM 16GB DDR4",
+            5: "Placa-mãe B760M",
+            6: "Processador Intel i5-13400"
+        };
+        
+        // Links dos componentes
+        const componentLinks = {
+            1: "https://www.pichau.com.br/gabinete-gamer-pichau-magpie-4-mid-tower-lateral-de-vidro-branco-pg-mag4-wh", // Gabinete (Magpie 4)
+            2: "https://www.pichau.com.br/fonte-corsair-cx650-650w-80-plus-bronze-preto-cp-9020278-br", // Fonte Corsair CX650
+            3: "https://www.pichau.com.br/ssd-kingston-nv3-500gb-m-2-2280-pcie-nvme-snv3s-500g", // SSD Kingston NV3 500GB
+            4: "https://www.pichau.com.br/memoria-kingston-fury-beast-16gb-1x16gb-ddr4-3200mhz-c16-preto-kf432c16bb-16", // RAM Kingston Fury Beast DDR4
+            5: "https://www.pichau.com.br/placa-mae-gigabyte-b760m-h-ddr4-lga-1700-m-atx-chipset-intel-b760-b760m-h-ddr4", // Placa-mãe Gigabyte B760M
+            6: "https://www.pichau.com.br/processador-intel-core-i5-13400-10-core-16-threads-2-5ghz-4-6ghz-turbo-cache-20mb-lga-1700-bx8071513400" // Processador Intel i5-13400
+        };
+        
+        // Descrições dos componentes
+        const componentDescriptions = {
+            1: "Gabinete Gamer Pichau Horus CC-310 Black Mid Tower com lateral de vidro, frente de mesh e 4 coolers incluídos.",
+            2: "Fonte Corsair CX650 80 Plus Bronze, 650W, PFC Ativo, Cabos Flat Preto - CP-9020232-BR.",
+            3: "SSD Kingston NV2 500GB, M.2 2280 PCIe 4.0 NVMe, Leitura 3500MB/s e Gravação 2100MB/s - SNV2S/500G.",
+            4: "Memória Kingston Fury Beast 16GB (1x16GB) DDR4 3200MHz, CL16, Preta - KF432C16BB/16.",
+            5: "Placa-mãe Asrock B760M-HDV/M.2 DDR4, Intel B760, LGA 1700, mATX, DDR4 - B760M-HDV/M.2 D4.",
+            6: "Processador Intel Core i5-13400, 10-Core, 16-Threads, 2.5GHz (4.6GHz Turbo), Cache 20MB, LGA 1700 - BX8071513400."
+        };
+        
+        // Ordem de compra dos componentes (cronograma)
+        const purchaseOrder = [1, 2, 3, 4, 5, 6];
+        
+        // CORREÇÃO: Estado da aplicação - garantir que purchasedComponents seja sempre um array
+        let purchasedComponents = JSON.parse(localStorage.getItem('purchasedComponents')) || [];
+        let savings = JSON.parse(localStorage.getItem('savings')) || [];
+        let totalSavings = parseFloat(localStorage.getItem('totalSavings')) || 0;
+        
+        // CORREÇÃO: Função para garantir que purchasedComponents seja sempre um array válido
+        function ensurePurchasedComponentsIsArray() {
+            if (!Array.isArray(purchasedComponents)) {
+                purchasedComponents = [];
+            }
+        }
+        
+        // CORREÇÃO: Função para resetar dados corrompidos
+        function resetCorruptedData() {
+            if (!Array.isArray(purchasedComponents)) {
+                console.warn('Dados corrompidos detectados, resetando purchasedComponents');
+                purchasedComponents = [];
+                localStorage.removeItem('purchasedComponents');
+            }
+            
+            if (!Array.isArray(savings)) {
+                console.warn('Dados corrompidos detectados, resetando savings');
+                savings = [];
+                localStorage.removeItem('savings');
+            }
+            
+            if (isNaN(totalSavings)) {
+                console.warn('Dados corrompidos detectados, resetando totalSavings');
+                totalSavings = 0;
+                localStorage.removeItem('totalSavings');
+            }
+        }
+
+        // CORREÇÃO: Verificar se estamos em ambiente PWA/offline
+        function isRunningAsPWA() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone === true ||
+                   document.referrer.includes('android-app://');
+        }
+
+        // CORREÇÃO: Inicialização segura para PWA
+        function safeInitialize() {
+            try {
+                // Verificar se estamos online
+                if (!navigator.onLine && isRunningAsPWA()) {
+                    console.log('Executando offline como PWA');
+                    // Carregar recursos críticos do cache se necessário
+                }
+                
+                resetCorruptedData();
+                ensurePurchasedComponentsIsArray();
+                
+                updateTimeline();
+                updateComponentsList();
+                updateSavingsList();
+                updateFinancialSummary();
+                updateProgress();
+                
+                setupPurchaseModal();
+                
+                // Mostrar mensagem se estiver offline
+                if (!navigator.onLine) {
+                    showNotification('Você está offline. A aplicação funciona localmente.', 'info');
+                }
+                
+            } catch (error) {
+                console.error('Erro na inicialização:', error);
+                showNotification('Erro ao carregar a aplicação. Recarregue a página.', 'error');
+            }
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            safeInitialize();
+            
+            // Configurar Service Worker se disponível
+            if ("serviceWorker" in navigator) {
+                // CORREÇÃO: Registrar service worker com escopo correto
+                navigator.serviceWorker.register("sw.js")
+                    .then(() => console.log("Service Worker registrado!"))
+                    .catch(error => console.log("Service Worker não pôde ser registrado:", error));
+            }
+
+            // CORREÇÃO: Listener para mudanças de conectividade
+            window.addEventListener('online', function() {
+                showNotification('Conexão restaurada.', 'success');
+            });
+
+            window.addEventListener('offline', function() {
+                showNotification('Você está offline. A aplicação funciona localmente.', 'info');
+            });
+        });
+        
+        // Função para mostrar/ocultar abas
+        function showTab(tabIndex) {
+            // Esconder todas as abas
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Mostrar a aba selecionada
+            tabs[tabIndex].classList.add('active');
+            tabContents[tabIndex].classList.add('active');
+        }
+        
+        // Função para atualizar o cronograma
+        function updateTimeline() {
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '';
+            
+            const totalValue = calculateTotalValue();
+            const months = purchaseOrder.length;
+            const monthlyValue = totalValue / months;
+            
+            let accumulated = 0;
+            let purchasedCount = 0;
+            
+            purchaseOrder.forEach((componentId, index) => {
+                const monthNumber = index + 1;
+                const componentPrice = componentPrices[componentId];
+                const isPurchased = purchasedComponents.includes(componentId);
+                
+                if (isPurchased) {
+                    purchasedCount++;
+                    accumulated += componentPrice;
+                }
+                
+                const monthDiv = document.createElement('div');
+                monthDiv.className = `month ${isPurchased ? 'comprado' : (accumulated >= componentPrice ? 'acumulando' : '')}`;
+                monthDiv.onclick = () => showComponentDetails(componentId);
+                
+                monthDiv.innerHTML = `
+                    <div class="month-number">Mês ${monthNumber}</div>
+                    <div class="component">${componentNames[componentId]}</div>
+                    <div class="price">R$ ${componentPrice.toFixed(2)}</div>
+                    ${isPurchased ? '<div style="color:#2ecc71; font-weight:bold;">✓ Comprado</div>' : 
+                      (accumulated >= componentPrice ? 
+                       '<div style="color:#f39c12; font-weight:bold;">💰 Pode comprar!</div>' : 
+                       `<div class="saved">Guardado: R$ ${Math.min(accumulated, componentPrice).toFixed(2)}</div>`)}
+                `;
+                
+                timeline.appendChild(monthDiv);
+                accumulated += componentPrice;
+            });
+            
+            document.getElementById('totalValue2').textContent = totalValue.toFixed(2);
+            document.getElementById('monthsCount').textContent = months;
+        }
+        
+        // Função para atualizar a lista de componentes
+        function updateComponentsList() {
+            const componentsList = document.getElementById('componentsList');
+            componentsList.innerHTML = '';
+            
+            purchaseOrder.forEach(componentId => {
+                const isPurchased = purchasedComponents.includes(componentId);
+                
+                const componentDiv = document.createElement('div');
+                componentDiv.className = `component-item ${isPurchased ? 'comprado' : ''}`;
+                componentDiv.id = `component-${componentId}`;
+                
+                componentDiv.innerHTML = `
+                    <div class="component-header">
+                        <div class="component-name">${componentNames[componentId]}</div>
+                        <div class="component-price">R$ ${componentPrices[componentId].toFixed(2)}</div>
+                    </div>
+                    <div class="component-desc">${componentDescriptions[componentId]}</div>
+                    <a href="${componentLinks[componentId]}" target="_blank" class="component-link">🛒 Comprar Agora</a>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="checkbox-${componentId}" ${isPurchased ? 'checked' : ''} 
+                               onchange="togglePurchase(${componentId})">
+                        <label for="checkbox-${componentId}" class="checkbox-label">Marcar como comprado</label>
+                    </div>
+                `;
+                
+                componentsList.appendChild(componentDiv);
+            });
+        }
+        
+        // Função para mostrar detalhes de um componente específico
+        function showComponentDetails(componentId) {
+            // Ativar a aba de componentes
+            showTab(1);
+            
+            // Filtrar para mostrar apenas o componente selecionado
+            const filterInfo = document.getElementById('filterInfo');
+            const btnShowAll = document.getElementById('btnShowAll');
+            
+            // Mostrar apenas o componente selecionado
+            purchaseOrder.forEach(id => {
+                const componentDiv = document.getElementById(`component-${id}`);
+                if (componentDiv) {
+                    componentDiv.style.display = id === componentId ? 'block' : 'none';
+                }
+            });
+            
+            // Ativar o filtro
+            filterInfo.classList.add('active');
+            document.getElementById('filterComponentName').textContent = componentNames[componentId];
+            btnShowAll.style.display = 'block';
+            
+            // Rolar para o componente
+            document.getElementById(`component-${componentId}`).scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Função para mostrar todos os componentes novamente
+        function showAllComponents() {
+            const filterInfo = document.getElementById('filterInfo');
+            const btnShowAll = document.getElementById('btnShowAll');
+            
+            // Mostrar todos os componentes
+            purchaseOrder.forEach(id => {
+                const componentDiv = document.getElementById(`component-${id}`);
+                if (componentDiv) {
+                    componentDiv.style.display = 'block';
+                }
+            });
+            
+            // Desativar o filtro
+            filterInfo.classList.remove('active');
+            btnShowAll.style.display = 'none';
+        }
+        
+        // Função para alternar o estado de compra de um componente
+        function togglePurchase(componentId) {
+            const checkbox = document.getElementById(`checkbox-${componentId}`);
+            const isChecked = checkbox.checked;
+            
+            if (isChecked) {
+                // Mostrar modal de confirmação
+                showPurchaseModal(componentId);
+            } else {
+                // Remover da lista de comprados
+                purchasedComponents = purchasedComponents.filter(id => id !== componentId);
+                saveState();
+                updateUI();
+                showNotification(`Componente "${componentNames[componentId]}" removido da lista de comprados.`, 'info');
+            }
+        }
+        
+        // Função para configurar o modal de confirmação
+        function setupPurchaseModal() {
+            const modal = document.getElementById('purchaseModal');
+            const confirmBtn = document.getElementById('confirmPurchaseBtn');
+            const cancelBtn = document.getElementById('cancelPurchaseBtn');
+            
+            // Fechar modal ao clicar fora
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    hidePurchaseModal();
+                }
+            });
+            
+            // Configurar botões
+            cancelBtn.addEventListener('click', hidePurchaseModal);
+        }
+        
+        // Função para mostrar o modal de confirmação
+        function showPurchaseModal(componentId) {
+            const modal = document.getElementById('purchaseModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const confirmBtn = document.getElementById('confirmPurchaseBtn');
+            
+            modalTitle.textContent = 'Confirmar Compra';
+            modalBody.innerHTML = `Deseja confirmar a compra de <strong>${componentNames[componentId]}</strong> por R$ ${componentPrices[componentId].toFixed(2)}?`;
+            
+            // Configurar ação do botão de confirmação
+            confirmBtn.onclick = function() {
+                purchasedComponents.push(componentId);
+                saveState();
+                updateUI();
+                hidePurchaseModal();
+                showNotification(`Parabéns! Você adquiriu o ${componentNames[componentId]}.`, 'success');
+            };
+            
+            // Mostrar modal
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+        
+        // Função para esconder o modal de confirmação
+        function hidePurchaseModal() {
+            const modal = document.getElementById('purchaseModal');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                
+                // Desmarcar o checkbox que acionou o modal
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const componentId = parseInt(checkbox.id.split('-')[1]);
+                        if (!purchasedComponents.includes(componentId)) {
+                            checkbox.checked = false;
+                        }
+                    }
+                });
+            }, 220);
+        }
+        
+        // Função para adicionar um depósito ao cofrinho
+        function addSavings() {
+            const month = document.getElementById('savingsMonth').value;
+            const year = document.getElementById('savingsYear').value;
+            const amountInput = document.getElementById('savingsAmount');
+            const amount = parseFloat(amountInput.value);
+            
+            if (!amount || amount <= 0 || isNaN(amount)) {
+                showNotification('Por favor, insira um valor válido para o depósito.', 'error');
+                amountInput.focus();
+                return;
+            }
+            
+            const savingsEntry = {
+                month: parseInt(month),
+                year: parseInt(year),
+                amount: amount,
+                date: new Date().toISOString()
+            };
+            
+            savings.push(savingsEntry);
+            totalSavings += amount;
+            
+            saveState();
+            updateSavingsList();
+            updateProgress();
+            
+            // Limpar o campo de valor
+            amountInput.value = '';
+            
+            showNotification(`Depósito de R$ ${amount.toFixed(2)} adicionado com sucesso!`, 'success');
+        }
+        
+        // Função para atualizar a lista de depósitos
+        function updateSavingsList() {
+            const savingsList = document.getElementById('savingsList');
+            const totalSavingsElement = document.getElementById('totalSavings');
+            const pendingTotalElement = document.getElementById('pendingTotal');
+            
+            savingsList.innerHTML = '';
+            
+            if (savings.length === 0) {
+                savingsList.innerHTML = '<div style="text-align:center; color:#7f8c8d; padding:20px;">Nenhum depósito registrado ainda.</div>';
+            } else {
+                // Ordenar por data (mais recente primeiro)
+                savings.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                savings.forEach((entry, index) => {
+                    const savingsItem = document.createElement('div');
+                    savingsItem.className = 'savings-item';
+                    
+                    const monthNames = ['', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                    
+                    savingsItem.innerHTML = `
+                        <div class="savings-info">
+                            <div class="savings-month">${monthNames[entry.month]} ${entry.year}</div>
+                        </div>
+                        <div class="savings-amount">R$ ${entry.amount.toFixed(2)}</div>
+                        <button class="btn-remove" onclick="removeSavings(${index})">Remover</button>
+                    `;
+                    
+                    savingsList.appendChild(savingsItem);
+                });
+            }
+            
+            totalSavingsElement.textContent = totalSavings.toFixed(2);
+            
+            const totalValue = calculateTotalValue();
+            const spentValue = calculateSpentValue();
+            const pendingTotal = totalValue - spentValue;
+            
+            pendingTotalElement.textContent = pendingTotal > 0 ? pendingTotal.toFixed(2) : '0,00';
+        }
+        
+        // Função para remover um depósito
+        function removeSavings(index) {
+            if (index >= 0 && index < savings.length) {
+                const removedAmount = savings[index].amount;
+                savings.splice(index, 1);
+                totalSavings -= removedAmount;
+                
+                saveState();
+                updateSavingsList();
+                updateProgress();
+                
+                showNotification(`Depósito de R$ ${removedAmount.toFixed(2)} removido.`, 'info');
+            }
+        }
+        
+        // Função para atualizar o resumo financeiro
+        function updateFinancialSummary() {
+            const financialSummary = document.getElementById('financialSummary');
+            const totalValue = calculateTotalValue();
+            const spentValue = calculateSpentValue();
+            const remainingValue = totalValue - spentValue;
+            const progressPercent = totalValue > 0 ? (spentValue / totalValue * 100).toFixed(1) : 0;
+            
+            let summaryHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div style="background: #e8f5e9; padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.9rem; color: #2e7d32;">Valor Total</div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #2e7d32;">R$ ${totalValue.toFixed(2)}</div>
+                    </div>
+                    <div style="background: #fff3e0; padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.9rem; color: #ef6c00;">Valor Gasto</div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #ef6c00;">R$ ${spentValue.toFixed(2)}</div>
+                    </div>
+                    <div style="background: #e3f2fd; padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.9rem; color: #1565c0;">Valor Restante</div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #1565c0;">R$ ${remainingValue.toFixed(2)}</div>
+                    </div>
+                    <div style="background: #fce4ec; padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.9rem; color: #ad1457;">Progresso</div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #ad1457;">${progressPercent}%</div>
+                    </div>
+                </div>
+            `;
+            
+            // Lista de componentes com status
+            summaryHTML += '<div style="margin-top: 20px;"><strong>Status dos Componentes:</strong></div>';
+            summaryHTML += '<div style="margin-top: 10px;">';
+            
+            purchaseOrder.forEach(componentId => {
+                const isPurchased = purchasedComponents.includes(componentId);
+                summaryHTML += `
+                    <div style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #f0f0f0;">
+                        <span>${componentNames[componentId]}</span>
+                        <span style="color: ${isPurchased ? '#2ecc71' : '#e74c3c'}; font-weight: bold;">
+                            ${isPurchased ? '✓ Comprado' : '⏳ Pendente'}
+                        </span>
+                    </div>
+                `;
+            });
+            
+            summaryHTML += '</div>';
+            
+            financialSummary.innerHTML = summaryHTML;
+        }
+        
+        // Função para atualizar a barra de progresso
+        function updateProgress() {
+            const totalValue = calculateTotalValue();
+            const spentValue = calculateSpentValue();
+            const remainingValue = totalValue - spentValue;
+            const progressPercent = totalValue > 0 ? (spentValue / totalValue * 100) : 0;
+            
+            document.getElementById('progressPercent').textContent = progressPercent.toFixed(1) + '%';
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            document.getElementById('totalValue').textContent = totalValue.toFixed(2);
+            document.getElementById('spentValue').textContent = spentValue.toFixed(2);
+            document.getElementById('remainingValue').textContent = remainingValue.toFixed(2);
+        }
+        
+        // Função para calcular o valor total do setup
+        function calculateTotalValue() {
+            return purchaseOrder.reduce((total, componentId) => total + componentPrices[componentId], 0);
+        }
+        
+        // Função para calcular o valor já gasto
+        function calculateSpentValue() {
+            return purchasedComponents.reduce((total, componentId) => total + componentPrices[componentId], 0);
+        }
+        
+        // CORREÇÃO: Função para salvar o estado no localStorage com validação
+        function saveState() {
+            ensurePurchasedComponentsIsArray(); // Garantir que é array antes de salvar
+            
+            // Garantir que savings seja um array
+            if (!Array.isArray(savings)) {
+                savings = [];
+            }
+            
+            // Garantir que totalSavings seja um número
+            if (isNaN(totalSavings)) {
+                totalSavings = 0;
+            }
+            
+            localStorage.setItem('purchasedComponents', JSON.stringify(purchasedComponents));
+            localStorage.setItem('savings', JSON.stringify(savings));
+            localStorage.setItem('totalSavings', totalSavings.toString());
+        }
+        
+        // Função para atualizar toda a UI
+        function updateUI() {
+            updateTimeline();
+            updateComponentsList();
+            updateFinancialSummary();
+            updateProgress();
+        }
+        
+        // Função para mostrar notificações
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notificationMessage');
+            
+            // Definir cor baseada no tipo
+            if (type === 'success') {
+                notification.style.background = '#d4edda';
+                notification.style.borderLeftColor = '#28a745';
+                notification.querySelector('.notification-title').style.color = '#155724';
+                notification.querySelector('.notification-message').style.color = '#155724';
+            } else if (type === 'error') {
+                notification.style.background = '#f8d7da';
+                notification.style.borderLeftColor = '#dc3545';
+                notification.querySelector('.notification-title').style.color = '#721c24';
+                notification.querySelector('.notification-message').style.color = '#721c24';
+            } else {
+                notification.style.background = '#fff3cd';
+                notification.style.borderLeftColor = '#ffc107';
+                notification.querySelector('.notification-title').style.color = '#856404';
+                notification.querySelector('.notification-message').style.color = '#856404';
+            }
+            
+            notificationMessage.textContent = message;
+            notification.classList.add('show');
+            
+            // Auto-esconder após 5 segundos
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+        
+        // Função para esconder notificações
+        function hideNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+        }
+        
+        // Função para gerar relatório financeiro em PDF
+        function gerarRelatorioFinanceiro() {
+            const { jsPDF } = window.jspdf;
+            
+            if (!jsPDF) {
+                showNotification('Erro: Biblioteca jsPDF não carregada.', 'error');
+                return;
+            }
+            
+            const doc = new jsPDF();
+            
+            // Título
+            doc.setFontSize(20);
+            doc.text('Relatório Financeiro - Setup Intel i5-13400', 20, 30);
+            
+            // Data do relatório
+            const today = new Date();
+            doc.setFontSize(12);
+            doc.text(`Gerado em: ${today.toLocaleDateString('pt-BR')}`, 20, 45);
+            
+            // Resumo financeiro
+            const totalValue = calculateTotalValue();
+            const spentValue = calculateSpentValue();
+            const remainingValue = totalValue - spentValue;
+            const progressPercent = totalValue > 0 ? (spentValue / totalValue * 100).toFixed(1) : 0;
+            
+            doc.setFontSize(16);
+            doc.text('Resumo Financeiro', 20, 65);
+            
+            doc.setFontSize(12);
+            doc.text(`Valor Total do Setup: R$ ${totalValue.toFixed(2)}`, 20, 80);
+            doc.text(`Valor Já Gasto: R$ ${spentValue.toFixed(2)}`, 20, 90);
+            doc.text(`Valor Restante: R$ ${remainingValue.toFixed(2)}`, 20, 100);
+            doc.text(`Progresso: ${progressPercent}%`, 20, 110);
+            
+            // Lista de componentes
+            let yPosition = 130;
+            doc.setFontSize(16);
+            doc.text('Status dos Componentes', 20, yPosition);
+            yPosition += 10;
+            
+            doc.setFontSize(10);
+            purchaseOrder.forEach(componentId => {
+                const isPurchased = purchasedComponents.includes(componentId);
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                doc.text(`${componentNames[componentId]}: ${isPurchased ? 'Comprado' : 'Pendente'} - R$ ${componentPrices[componentId].toFixed(2)}`, 20, yPosition);
+                yPosition += 7;
+            });
+            
+            // Histórico de depósitos
+            if (savings.length > 0) {
+                yPosition += 10;
+                if (yPosition > 250) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                doc.setFontSize(16);
+                doc.text('Histórico de Depósitos', 20, yPosition);
+                yPosition += 10;
+                
+                doc.setFontSize(10);
+                savings.forEach(entry => {
+                    if (yPosition > 270) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    
+                    const monthNames = ['', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                    doc.text(`${monthNames[entry.month]}/${entry.year}: R$ ${entry.amount.toFixed(2)}`, 20, yPosition);
+                    yPosition += 7;
+                });
+                
+                doc.text(`Total Guardado: R$ ${totalSavings.toFixed(2)}`, 20, yPosition);
+            }
+            
+            // Salvar o PDF
+            doc.save(`relatorio_setup_${today.toISOString().split('T')[0]}.pdf`);
+            
+            showNotification('Relatório gerado com sucesso!', 'success');
+        }
+    </script>
+</body>
+</html>
